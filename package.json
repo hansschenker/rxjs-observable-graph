@@ -19,10 +19,10 @@
     "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/rx/signal.test.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "build:cf": "DEPLOY_TARGET=cloudflare node scripts/with-app-env.mjs vite build",
-    "cf:dev": "DEPLOY_TARGET=cloudflare wrangler dev",
+    "build:cf": "node scripts/cf-deploy.mjs --build-only",
+    "cf:dev": "node scripts/cf-deploy.mjs --dev",
     "cf-typegen": "wrangler types",
-    "deploy": "npm run build:cf && wrangler deploy"
+    "deploy": "node scripts/cf-deploy.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",

@@ -54,6 +54,8 @@ TanStack Start · React 19 · RxJS 7 · Hono · Zod · Vite · Tailwind 4
 Same graph, deployed as a Worker. Local `npm run dev` on port 8080 is unchanged.
 
 ```bash
+git pull
+npm install
 npx wrangler login
 npm run deploy
 ```
