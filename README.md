@@ -48,3 +48,28 @@ payload hydrates the client graph.
 ## Stack
 
 TanStack Start · React 19 · RxJS 7 · Hono · Zod · Vite · Tailwind 4
+
+## Cloudflare (Wrangler)
+
+Same graph, deployed as a Worker. Local `npm run dev` on port 8080 is unchanged.
+
+```bash
+npx wrangler login
+npm run deploy
+```
+
+That builds with `DEPLOY_TARGET=cloudflare` (Cloudflare Vite plugin, no Vercel Nitro preset) and runs `wrangler deploy`. You get a `*.workers.dev` URL.
+
+```bash
+npm run cf:dev      # workerd locally (Wrangler)
+npm run build:cf    # Cloudflare production bundle only
+npm run cf-typegen  # wrangler types → worker-configuration.d.ts
+```
+
+CI: `.github/workflows/deploy-cloudflare.yml` deploys on push to `main` when these repo secrets exist:
+
+- `CLOUDFLARE_API_TOKEN` — Workers edit permission
+- `CLOUDFLARE_ACCOUNT_ID` — your account id
+
+Telemetry on the edge is isolate memory (resets per Worker instance). That is the Hono hop in the graph, not Durable Objects.
+

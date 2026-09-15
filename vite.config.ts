@@ -6,6 +6,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { nitro } from "nitro/vite";
+import { cloudflare } from "@cloudflare/vite-plugin";
 // @ts-expect-error JS plugin alongside the TS vite config
 import { grokPwaPlugin } from "./scripts/grok-pwa-plugin.mjs";
 // @ts-expect-error JS plugin alongside the TS vite config
@@ -145,6 +146,12 @@ function authPopupPlugin(): Plugin {
 // `0.0.0.0:8080` is the live-preview contract — don't change host/port.
 // The dev server starts once `src/router.tsx` and `src/routes/` exist — see
 // AGENTS.md § "First scaffold".
+//
+// Two deploy targets:
+//   default            → Nitro `vercel` (platform / `npm run build`)
+//   DEPLOY_TARGET=cloudflare → @cloudflare/vite-plugin + wrangler
+const isCloudflare = process.env.DEPLOY_TARGET === "cloudflare";
+
 export default defineConfig(({ command, isPreview }) => ({
   server: {
     host: "0.0.0.0",
@@ -166,8 +173,11 @@ export default defineConfig(({ command, isPreview }) => ({
     // PWA head + ?install=1 tutorial page; runs before Start/Nitro.
     grokPwaPlugin(),
     tailwindcss(),
+    // Cloudflare plugin must sit before tanstackStart. Default local/dev
+    // stays off so port 8080 is not stolen by workerd.
+    ...(isCloudflare ? [cloudflare({ viteEnvironment: { name: "ssr" } })] : []),
     tanstackStart(),
-    ...(command === "build" || isPreview
+    ...(!isCloudflare && (command === "build" || isPreview)
       ? [
           nitro({
             preset: "vercel",

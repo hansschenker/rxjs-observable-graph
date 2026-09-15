@@ -16,3 +16,7 @@ public/__grok
 .DS_Store
 AGENTS.md
 AGENTS.project.md
+.wrangler
+.dev.vars
+worker-configuration.d.ts
+
